@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="#f4f4f4"
+    android:fillViewport="true">
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5">
+      <ImageView
+          android:id="@+id/item_capa"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:src="@drawable/capa"
+          android:scaleType="centerCrop"
+          android:adjustViewBounds="true"
+      />
+      <TextView
+          android:id="@+id/item_titulo"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignBottom="@id/item_capa"
+          android:text="Capitão America"
+          android:textColor="@android:color/white"
+          android:gravity="center"
+          android:textAppearance="?android:textAppearanceLarge"
+          android:padding="7dp"
+          android:background="#D8000000"
+          android:textStyle="bold"
+      />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:background="@android:color/white">
+      <ImageView
+          android:id="@+id/item_poster"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@drawable/poster"
+          android:scaleType="centerInside"
+          android:adjustViewBounds="true"/>
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:layout_marginLeft="5dp"
+          android:padding="5dp">
+
+
+        <TextView
+            android:text="Data de lançamento"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/item_data"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/date"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:layout_marginTop="5dp"/>
+        <TextView
+            android:text="Descrição"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"/>
+        <TextView
+            android:id="@+id/item_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="8"
+            android:ellipsize="end"
+            android:text="@string/description"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_marginTop="5dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:text="Avaliação"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"/>
+        <RatingBar
+            android:id="@+id/item_avaliacao"
+            style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:numStars="5"
+            android:rating="3"
+            android:layout_marginTop="5dp"
+        />
+
+
+      </LinearLayout>
+    </LinearLayout>
+  </LinearLayout>
+</ScrollView>

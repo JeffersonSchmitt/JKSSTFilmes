@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+
+  <ImageView
+      android:id="@+id/item_capa"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:src="@drawable/capa"
+      android:scaleType="centerCrop"
+      android:adjustViewBounds="true"
+  />
+  <TextView
+
+      android:id="@+id/item_titulo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Capitão America"
+      android:textColor="@android:color/white"
+      android:gravity="center"
+      android:textAppearance="?android:textAppearanceLarge"
+      android:padding="7dp"
+      android:background="#D8000000"
+      android:layout_alignTop="@+id/item_capa"
+      android:textStyle="bold"
+  />
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="#D8000000"
+      android:layout_alignBottom="@+id/item_capa"
+      android:padding="2dp">
+
+    <RatingBar
+        android:id="@+id/item_avaliacao"
+        style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="2dp"
+        android:numStars="5"
+        android:rating="2"
+    />
+  </FrameLayout>
+</RelativeLayout>
