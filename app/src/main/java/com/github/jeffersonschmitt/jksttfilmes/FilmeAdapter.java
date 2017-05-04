@@ -44,7 +44,7 @@ public class FilmeAdapter extends CursorAdapter {
 
   @Override public View newView(Context context, Cursor cursor, ViewGroup parent) {
     int viewType = getItemViewType(cursor.getPosition());
-    int layoutId = 0;
+    int layoutId = -1;
     switch (viewType) {
       case VIEW_TYPE_DESTAQUE:
         layoutId = R.layout.item_filme_destaque;
@@ -72,7 +72,7 @@ public class FilmeAdapter extends CursorAdapter {
     int posterIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_POSTER_PATH);
     int capaIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_CAPA_PATH);
     int avalicaoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_AVALIACAO);
-    int datalancamentoindex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO);
+    int dataLancamentoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO);
 
     switch (viewType) {
 
@@ -85,7 +85,7 @@ public class FilmeAdapter extends CursorAdapter {
       case VIEW_TYPE_ITEM: {
         holder.titulo.setText(cursor.getString(tituloIndex));
         holder.desc.setText(cursor.getString(descricaoIndex));
-        holder.dataLancamento.setText(cursor.getString(datalancamentoindex));
+        holder.dataLancamento.setText(cursor.getString(dataLancamentoIndex));
         holder.avaliacao.setRating(cursor.getFloat(avalicaoIndex));
         new DownloadImageTask(holder.poster).execute(cursor.getString(posterIndex));
         break;

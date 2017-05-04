@@ -5,12 +5,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Process;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.github.jeffersonschmitt.jksttfilmes.data.FilmesDBHelper;
 import com.github.jeffersonschmitt.jksttfilmes.data.FilmesContract;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -95,6 +90,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     return view;
   }
 
+  @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    if (savedInstanceState != null) {
+      lvfilmes.smoothScrollToPosition(savedInstanceState.getInt(KEY_POSICAO));
+    }
+
+  }
+
   @Override public void onSaveInstanceState(Bundle outState) {
     if (posicaoItem != ListView.INVALID_POSITION) {
       outState.putInt(KEY_POSICAO, posicaoItem);
@@ -102,13 +106,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     super.onSaveInstanceState(outState);
   }
 
-  @Override public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-
-    if (posicaoItem != ListView.INVALID_POSITION && lvfilmes != null) {
-      lvfilmes.smoothScrollToPosition(posicaoItem);
-    }
-    super.onViewStateRestored(savedInstanceState);
-  }
 
   @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
@@ -137,21 +134,49 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    getLoaderManager().restartLoader(FILMES_LOADER, null, this);
+  }
+
+
   @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
     progressDialog.show();
 
     String[] projection = {
-        FilmesContract.FilmeEntry._ID, FilmesContract.FilmeEntry.COLUMN_TITULO,
+        FilmesContract.FilmeEntry._ID,
+        FilmesContract.FilmeEntry.COLUMN_TITULO,
         FilmesContract.FilmeEntry.COLUNM_DESCRICAO,
         FilmesContract.FilmeEntry.COLUMN_POSTER_PATH,
         FilmesContract.FilmeEntry.COLUMN_CAPA_PATH,
         FilmesContract.FilmeEntry.COLUMN_AVALIACAO,
-        FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO
+        FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO,
+        FilmesContract.FilmeEntry.COLUMN_POPULARIDADE
+
     };
 
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+    String ordem = preferences.getString(getString(R.string.prefs_ordem_key), "popular");
+
+    String orderby=null;
+
+    String popularValue=getResources().getStringArray(R.array.prefs_ordem_values)[0];
+
+
+    if(ordem.equals(popularValue)){
+      orderby= FilmesContract.FilmeEntry.COLUMN_POPULARIDADE+" DESC";
+    }else{
+      orderby= FilmesContract.FilmeEntry.COLUMN_AVALIACAO+" DESC";
+    }
+
     return new CursorLoader(getContext(), FilmesContract.FilmeEntry.CONTENT_URI, projection, null,
-        null, null);
+        null, orderby);
+
+
   }
 
   @Override public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -167,7 +192,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override protected List<ItemFilme> doInBackground(Void... params) {
       //https://api.themoviedb.org/3/movie/popular?api_key=3a66b12e3f4b81c2db0889528dd44c09&language=pt-BR
-//qualquercoisaparacommit
+
+      
       HttpURLConnection urlConnection = null;
       BufferedReader reader = null;
 
@@ -241,6 +267,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         values.put(FilmesContract.FilmeEntry.COLUMN_CAPA_PATH, itemfilme.getCapaPath());
         values.put(FilmesContract.FilmeEntry.COLUMN_AVALIACAO, itemfilme.getAvaliacao());
         values.put(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO, itemfilme.getDataLancamento());
+        values.put(FilmesContract.FilmeEntry.COLUMN_POPULARIDADE, itemfilme.getPopularidade());
 
 
 

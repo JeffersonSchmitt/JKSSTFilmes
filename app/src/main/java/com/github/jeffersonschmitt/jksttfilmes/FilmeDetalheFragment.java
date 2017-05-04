@@ -50,10 +50,8 @@ public class FilmeDetalheFragment extends Fragment
 
     capaView = (ImageView) view.findViewById(R.id.item_capa);
 
-    if (view.findViewById(R.id.item_poster) != null) {
+    posterview = (ImageView) view.findViewById(R.id.item_poster);
 
-      posterview = (ImageView) view.findViewById(R.id.item_poster);
-    }
 
     return view;
   }

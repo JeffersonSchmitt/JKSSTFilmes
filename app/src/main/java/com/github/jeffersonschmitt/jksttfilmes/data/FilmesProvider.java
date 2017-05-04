@@ -48,8 +48,8 @@ public class FilmesProvider extends ContentProvider {
       case FILME_ID:
 
         selection = FilmesContract.FilmeEntry._ID + "=?";
-        selectionArgs =
-            new String[] { String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri)) };
+
+        selectionArgs = new String[] { String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri)) };
 
         cursor = readableDatabase.query(FilmesContract.FilmeEntry.TABLE_NAME, projection, selection,
             selectionArgs, null, null, sortOrder);
@@ -69,9 +69,11 @@ public class FilmesProvider extends ContentProvider {
     switch (URI_MATCHER.match(uri)) {
       case FILME:
         return FilmesContract.FilmeEntry.CONTENT_TYPE;
+      case FILME_ID:
+        return FilmesContract.FilmeEntry.CONTENT_ITEM_TYPE;
+      default:
+        throw new IllegalArgumentException("Uri não identificada: " + uri);
     }
-
-    return null;
   }
 
   @Nullable @Override public Uri insert(Uri uri, ContentValues values) {

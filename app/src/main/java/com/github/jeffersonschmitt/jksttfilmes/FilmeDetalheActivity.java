@@ -15,7 +15,6 @@ public class FilmeDetalheActivity extends AppCompatActivity {
 
     Intent intent = getIntent();
     Uri uri= intent.getData();
-    ItemFilme itemfilme = (ItemFilme) intent.getSerializableExtra(MainActivity.FILME_DETALHE_URI);
 
     FragmentManager fragmentManager = getSupportFragmentManager();
 

@@ -1,7 +1,11 @@
 package com.github.jeffersonschmitt.jksttfilmes;
 
-import android.net.Uri;
+
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,7 +27,10 @@ public class ItemFilme implements Serializable {
 
   private float avaliacao;
 
-  public ItemFilme(long id, String titulo, String descricao, String dataLancamento, String posterPath, String capaPath, float avaliacao) {
+  private float popularidade;
+
+
+  public ItemFilme(long id, String titulo, String descricao, String dataLancamento, String posterPath, String capaPath, float avaliacao, float popularidade) {
     this.id = id;
     this.titulo = titulo;
     this.descricao = descricao;
@@ -31,6 +38,7 @@ public class ItemFilme implements Serializable {
     this.posterPath = posterPath;
     this.capaPath = capaPath;
     this.avaliacao = avaliacao;
+    this.popularidade=popularidade;
   }
 
   public ItemFilme(JSONObject jsonObject) throws JSONException {
@@ -41,6 +49,7 @@ public class ItemFilme implements Serializable {
     this.posterPath = jsonObject.getString("poster_path");
     this.capaPath = jsonObject.getString("backdrop_path");
     this.avaliacao = (float) jsonObject.getDouble("vote_average");
+    this.popularidade= (float) jsonObject.getDouble("popularity");
   }
 
   private String buildPath(String width, String path) {
@@ -76,6 +85,16 @@ public class ItemFilme implements Serializable {
   }
 
   public String getDataLancamento() {
+
+    Locale locale = new Locale("pt", "BR");
+
+    try {
+      Date date = new SimpleDateFormat("yyyy-MM-dd", locale).parse(dataLancamento);
+      return new SimpleDateFormat("dd/MM/yyyy", locale).format(date);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
     return dataLancamento;
   }
 
@@ -105,5 +124,13 @@ public class ItemFilme implements Serializable {
 
   public void setAvaliacao(float avaliacao) {
     this.avaliacao = avaliacao;
+  }
+
+  public float getPopularidade() {
+    return popularidade;
+  }
+
+  public void setPopularidade(float popularidade) {
+    this.popularidade = popularidade;
   }
 }
