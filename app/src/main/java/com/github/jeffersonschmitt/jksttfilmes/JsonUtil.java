@@ -8,9 +8,9 @@ import org.json.JSONObject;
 
 public class JsonUtil {
 
-  public static List<ItemFilme> jsonlist(String json) {
+  public static List<ItemFilme> fromJsonToList(String json) {
 
-    List<ItemFilme> listFilme= new ArrayList<>();
+    List<ItemFilme> list= new ArrayList<>();
 
 
     try {
@@ -20,11 +20,11 @@ public class JsonUtil {
       for (int i = 0; i < results.length(); i++) {
         JSONObject filmeObject = results.getJSONObject(i);
         ItemFilme itemfilme = new ItemFilme(filmeObject);
-        listFilme.add(itemfilme);
+        list.add(itemfilme);
       }
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    return listFilme;
+    return list;
   }
 }

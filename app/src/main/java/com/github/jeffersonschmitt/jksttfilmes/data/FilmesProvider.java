@@ -16,25 +16,28 @@ public class FilmesProvider extends ContentProvider {
   private FilmesDBHelper dbHelper;
 
   private static final int FILME = 100;
+
   private static final int FILME_ID = 101;
 
   private static UriMatcher buildUriMatcher() {
     final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     uriMatcher.addURI(FilmesContract.CONTENT_AUTHORITY, FilmesContract.PATH_FILMES, FILME);
-    uriMatcher.addURI(FilmesContract.CONTENT_AUTHORITY, FilmesContract.PATH_FILMES + "/#", FILME);
+    uriMatcher.addURI(FilmesContract.CONTENT_AUTHORITY, FilmesContract.PATH_FILMES + "/#", FILME_ID);
 
     return uriMatcher;
   }
 
-  @Override public boolean onCreate() {
+  @Override
+  public boolean onCreate() {
     dbHelper = new FilmesDBHelper(getContext());
+
     return true;
   }
 
-  @Nullable @Override
-  public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-      String sortOrder) {
+  @Nullable
+  @Override
+  public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
     SQLiteDatabase readableDatabase = dbHelper.getReadableDatabase();
 
@@ -42,21 +45,18 @@ public class FilmesProvider extends ContentProvider {
 
     switch (URI_MATCHER.match(uri)) {
       case FILME:
-        cursor = readableDatabase.query(FilmesContract.FilmeEntry.TABLE_NAME, projection, selection,
-            selectionArgs, null, null, sortOrder);
+        cursor = readableDatabase.query(FilmesContract.FilmeEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+
         break;
       case FILME_ID:
-
         selection = FilmesContract.FilmeEntry._ID + "=?";
+        selectionArgs = new String[] {String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri))};
 
-        selectionArgs = new String[] { String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri)) };
+        cursor = readableDatabase.query(FilmesContract.FilmeEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
-        cursor = readableDatabase.query(FilmesContract.FilmeEntry.TABLE_NAME, projection, selection,
-            selectionArgs, null, null, sortOrder);
         break;
-
       default:
-        throw new IllegalArgumentException("URI NÃO IDENTIFICADA:" + uri);
+        throw new IllegalArgumentException("Uri não identificada: " + uri);
     }
 
     cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -64,8 +64,9 @@ public class FilmesProvider extends ContentProvider {
     return cursor;
   }
 
-  @Nullable @Override public String getType(Uri uri) {
-
+  @Nullable
+  @Override
+  public String getType(Uri uri) {
     switch (URI_MATCHER.match(uri)) {
       case FILME:
         return FilmesContract.FilmeEntry.CONTENT_TYPE;
@@ -76,10 +77,13 @@ public class FilmesProvider extends ContentProvider {
     }
   }
 
-  @Nullable @Override public Uri insert(Uri uri, ContentValues values) {
-    SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
-    long id;
+  @Nullable
+  @Override
+  public Uri insert(Uri uri, ContentValues values) {
 
+    SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
+
+    long id;
     switch (URI_MATCHER.match(uri)) {
       case FILME:
         id = writableDatabase.insert(FilmesContract.FilmeEntry.TABLE_NAME, null, values);
@@ -90,7 +94,7 @@ public class FilmesProvider extends ContentProvider {
 
         break;
       default:
-        throw new IllegalArgumentException("URI NÃO IDENTIFICADA:" + uri);
+        throw new IllegalArgumentException("Uri não identificada: " + uri);
     }
 
     getContext().getContentResolver().notifyChange(uri, null);
@@ -98,25 +102,28 @@ public class FilmesProvider extends ContentProvider {
     return FilmesContract.FilmeEntry.buildUriForFilmes(id);
   }
 
-  @Override public int delete(Uri uri, String selection, String[] selectionArgs) {
+  @Override
+  public int delete(Uri uri, String selection, String[] selectionArgs) {
+
     SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
-    int delete=0;
+
+    int delete = 0;
+
     switch (URI_MATCHER.match(uri)) {
       case FILME:
-        delete= writableDatabase.delete(FilmesContract.FilmeEntry.TABLE_NAME, selection,
-            selectionArgs);
+        delete = writableDatabase.delete(FilmesContract.FilmeEntry.TABLE_NAME, selection, selectionArgs);
 
       case FILME_ID:
         selection = FilmesContract.FilmeEntry._ID + "=?";
-        selectionArgs =
-            new String[] { String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri)) };
-        delete= writableDatabase.delete(FilmesContract.FilmeEntry.TABLE_NAME, selection,
-            selectionArgs);
+        selectionArgs = new String[] {String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri))};
 
+        delete = writableDatabase.delete(FilmesContract.FilmeEntry.TABLE_NAME, selection, selectionArgs);
     }
-    if(delete!=0){
-      getContext().getContentResolver().notifyChange(uri,null);
+
+    if (delete != 0) {
+      getContext().getContentResolver().notifyChange(uri, null);
     }
+
     return delete;
   }
 
@@ -129,21 +136,19 @@ public class FilmesProvider extends ContentProvider {
 
     switch (URI_MATCHER.match(uri)) {
       case FILME:
-        update = writableDatabase.update(FilmesContract.FilmeEntry.TABLE_NAME, values, selection,
-            selectionArgs);
+        update = writableDatabase.update(FilmesContract.FilmeEntry.TABLE_NAME, values, selection, selectionArgs);
 
       case FILME_ID:
         selection = FilmesContract.FilmeEntry._ID + "=?";
-        selectionArgs =
-            new String[] { String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri)) };
+        selectionArgs = new String[] {String.valueOf(FilmesContract.FilmeEntry.getIdFromUri(uri))};
 
-        update = writableDatabase.update(FilmesContract.FilmeEntry.TABLE_NAME, values, selection,
-            selectionArgs);
-
+        update = writableDatabase.update(FilmesContract.FilmeEntry.TABLE_NAME, values, selection, selectionArgs);
     }
+
     if (update != 0) {
       getContext().getContentResolver().notifyChange(uri, null);
     }
+
     return update;
   }
 }

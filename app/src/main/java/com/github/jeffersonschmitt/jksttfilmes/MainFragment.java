@@ -34,92 +34,98 @@ import java.net.URL;
 import java.util.List;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
   private int posicaoItem = ListView.INVALID_POSITION;
 
   private static final String KEY_POSICAO = "SELECIONADO";
 
+  private ListView list;
+
+  private FilmesAdapter adapter;
+
   private boolean useFilmeDestaque = false;
 
-  private FilmeAdapter adapter;
-
-  private static final int FILMES_LOADER=0;
+  private static final int FILMES_LOADER = 0;
 
   private ProgressDialog progressDialog;
 
-  ListView lvfilmes;
-
-  @Override public void onCreate(Bundle savedInstanceState) {
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
   }
 
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
 
     View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-    lvfilmes = (ListView) view.findViewById(R.id.lvfilmes);
+    list = (ListView) view.findViewById(R.id.list_filmes);
 
-    adapter = new FilmeAdapter(getContext(), null);
+    adapter = new FilmesAdapter(getContext(), null);
     adapter.setUseFilmeDestaque(useFilmeDestaque);
 
-    lvfilmes.setAdapter(adapter);
+    list.setAdapter(adapter);
 
-    lvfilmes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      Uri uri= FilmesContract.FilmeEntry.buildUriForFilmes(id);
+    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Uri uri = FilmesContract.FilmeEntry.buildUriForFilmes(id);
         Callback callback = (Callback) getActivity();
         callback.onItemSelected(uri);
         posicaoItem = position;
       }
     });
 
-    if (savedInstanceState != null && savedInstanceState.containsKey(KEY_POSICAO)) {
+    if(savedInstanceState != null && savedInstanceState.containsKey(KEY_POSICAO)) {
       posicaoItem = savedInstanceState.getInt(KEY_POSICAO);
     }
 
     progressDialog = new ProgressDialog(getContext());
     progressDialog.setTitle(getString(R.string.pd_carregando_titulo));
-    progressDialog.setMessage(getString(R.string.pd_aguarde_mensagem));
+    progressDialog.setMessage(getString(R.string.pd_carregando_mensagem));
     progressDialog.setCancelable(false);
 
-    getLoaderManager().initLoader(FILMES_LOADER,null,this);
+    getLoaderManager().initLoader(FILMES_LOADER, null, this);
+
     new FilmesAsyncTask().execute();
 
     return view;
   }
 
-  @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
 
-    if (savedInstanceState != null) {
-      lvfilmes.smoothScrollToPosition(savedInstanceState.getInt(KEY_POSICAO));
-    }
-
-  }
-
-  @Override public void onSaveInstanceState(Bundle outState) {
-    if (posicaoItem != ListView.INVALID_POSITION) {
+    if(posicaoItem != ListView.INVALID_POSITION) {
       outState.putInt(KEY_POSICAO, posicaoItem);
     }
+
     super.onSaveInstanceState(outState);
   }
 
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
 
-  @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    if (savedInstanceState != null) {
+      list.smoothScrollToPosition(savedInstanceState.getInt(KEY_POSICAO));
+    }
+  }
 
+
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     inflater.inflate(R.menu.menu, menu);
   }
 
-  @Override public boolean onOptionsItemSelected(MenuItem item) {
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
 
     switch (item.getItemId()) {
       case R.id.menu_atualizar:
         new FilmesAsyncTask().execute();
-        Toast.makeText(getContext(), "Atualizado com sucesso", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Atualizando os filmes...", Toast.LENGTH_LONG).show();
         return true;
-
       case R.id.menu_config:
         startActivity(new Intent(getContext(), SettingsActivity.class));
       default:
@@ -129,6 +135,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
   public void setUseFilmeDestaque(boolean useFilmeDestaque) {
     this.useFilmeDestaque = useFilmeDestaque;
+
     if (adapter != null) {
       adapter.setUseFilmeDestaque(useFilmeDestaque);
     }
@@ -141,64 +148,59 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     getLoaderManager().restartLoader(FILMES_LOADER, null, this);
   }
 
-
-  @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+  @Override
+  public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
     progressDialog.show();
 
     String[] projection = {
         FilmesContract.FilmeEntry._ID,
         FilmesContract.FilmeEntry.COLUMN_TITULO,
-        FilmesContract.FilmeEntry.COLUNM_DESCRICAO,
+        FilmesContract.FilmeEntry.COLUMN_DESCRICAO,
         FilmesContract.FilmeEntry.COLUMN_POSTER_PATH,
         FilmesContract.FilmeEntry.COLUMN_CAPA_PATH,
         FilmesContract.FilmeEntry.COLUMN_AVALIACAO,
         FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO,
         FilmesContract.FilmeEntry.COLUMN_POPULARIDADE
-
     };
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-
     String ordem = preferences.getString(getString(R.string.prefs_ordem_key), "popular");
 
-    String orderby=null;
+    String popularValue = getResources().getStringArray(R.array.prefs_ordem_values)[0];
 
-    String popularValue=getResources().getStringArray(R.array.prefs_ordem_values)[0];
+    String orderBy = null;
 
-
-    if(ordem.equals(popularValue)){
-      orderby= FilmesContract.FilmeEntry.COLUMN_POPULARIDADE+" DESC";
-    }else{
-      orderby= FilmesContract.FilmeEntry.COLUMN_AVALIACAO+" DESC";
+    if (ordem.equals(popularValue)) {
+      orderBy = FilmesContract.FilmeEntry.COLUMN_POPULARIDADE + " DESC";
+    } else {
+      orderBy = FilmesContract.FilmeEntry.COLUMN_AVALIACAO + " DESC";
     }
 
-    return new CursorLoader(getContext(), FilmesContract.FilmeEntry.CONTENT_URI, projection, null,
-        null, orderby);
-
-
+    return new CursorLoader(getContext(), FilmesContract.FilmeEntry.CONTENT_URI, projection, null, null, orderBy);
   }
 
-  @Override public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+  @Override
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
     adapter.swapCursor(data);
     progressDialog.dismiss();
   }
 
-  @Override public void onLoaderReset(Loader<Cursor> loader) {
+  @Override
+  public void onLoaderReset(Loader<Cursor> loader) {
     adapter.swapCursor(null);
   }
 
   public class FilmesAsyncTask extends AsyncTask<Void, Void, List<ItemFilme>> {
 
-    @Override protected List<ItemFilme> doInBackground(Void... params) {
-      //https://api.themoviedb.org/3/movie/popular?api_key=3a66b12e3f4b81c2db0889528dd44c09&language=pt-BR
+    @Override
+    protected List<ItemFilme> doInBackground(Void... params) {
+      // https://api.themoviedb.org/3/movie/popular?api_key=qwer08776&language=pt-BR
 
-      
       HttpURLConnection urlConnection = null;
       BufferedReader reader = null;
 
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-
       String ordem = preferences.getString(getString(R.string.prefs_ordem_key), "popular");
       String idioma = preferences.getString(getString(R.string.prefs_idioma_key), "pt-BR");
 
@@ -207,8 +209,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         String apiKey = "api_key";
         String language = "language";
 
-        Uri uriApi = Uri.parse(urlBase)
-            .buildUpon()
+        Uri uriApi = Uri.parse(urlBase).buildUpon()
             .appendQueryParameter(apiKey, BuildConfig.TMDB_API_KEY)
             .appendQueryParameter(language, idioma)
             .build();
@@ -219,7 +220,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         urlConnection.connect();
 
         InputStream inputStream = urlConnection.getInputStream();
-
         if (inputStream == null) {
           return null;
         }
@@ -233,7 +233,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
           buffer.append("\n");
         }
 
-        return JsonUtil.jsonlist(buffer.toString());
+        return JsonUtil.fromJsonToList(buffer.toString());
+
       } catch (IOException e) {
         e.printStackTrace();
       } finally {
@@ -248,34 +249,29 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
           }
         }
       }
+
       return null;
     }
 
-    @Override protected void onPostExecute(List<ItemFilme> itemfilmes) {
+    @Override
+    protected void onPostExecute(List<ItemFilme> itemFilmes) {
 
-     if(itemfilmes==null){
+      if (itemFilmes == null) {
         return;
       }
 
-      for (ItemFilme itemfilme : itemfilmes) {
+      for (ItemFilme itemFilme : itemFilmes) {
         ContentValues values = new ContentValues();
+        values.put(FilmesContract.FilmeEntry._ID, itemFilme.getId());
+        values.put(FilmesContract.FilmeEntry.COLUMN_TITULO, itemFilme.getTitulo());
+        values.put(FilmesContract.FilmeEntry.COLUMN_DESCRICAO, itemFilme.getDescricao());
+        values.put(FilmesContract.FilmeEntry.COLUMN_POSTER_PATH, itemFilme.getPosterPath());
+        values.put(FilmesContract.FilmeEntry.COLUMN_CAPA_PATH, itemFilme.getCapaPath());
+        values.put(FilmesContract.FilmeEntry.COLUMN_AVALIACAO, itemFilme.getAvaliacao());
+        values.put(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO, itemFilme.getDataLancamento());
+        values.put(FilmesContract.FilmeEntry.COLUMN_POPULARIDADE, itemFilme.getPopularidade());
 
-        values.put(FilmesContract.FilmeEntry._ID, itemfilme.getId());
-        values.put(FilmesContract.FilmeEntry.COLUMN_TITULO, itemfilme.getTitulo());
-        values.put(FilmesContract.FilmeEntry.COLUNM_DESCRICAO, itemfilme.getDescricao());
-        values.put(FilmesContract.FilmeEntry.COLUMN_POSTER_PATH, itemfilme.getPosterPath());
-        values.put(FilmesContract.FilmeEntry.COLUMN_CAPA_PATH, itemfilme.getCapaPath());
-        values.put(FilmesContract.FilmeEntry.COLUMN_AVALIACAO, itemfilme.getAvaliacao());
-        values.put(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO, itemfilme.getDataLancamento());
-        values.put(FilmesContract.FilmeEntry.COLUMN_POPULARIDADE, itemfilme.getPopularidade());
-
-
-
-
-        int update = getContext().getContentResolver()
-            .update(FilmesContract.FilmeEntry.buildUriForFilmes(itemfilme.getId()),values,null,null);
-
-
+        int update = getContext().getContentResolver().update(FilmesContract.FilmeEntry.buildUriForFilmes(itemFilme.getId()), values, null, null);
 
         if (update == 0) {
           getContext().getContentResolver().insert(FilmesContract.FilmeEntry.CONTENT_URI, values);
@@ -283,4 +279,5 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
       }
     }
   }
+
 }

@@ -1,6 +1,5 @@
 package com.github.jeffersonschmitt.jksttfilmes;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -12,7 +11,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import com.github.jeffersonschmitt.jksttfilmes.data.FilmesContract;
 
-public class FilmeAdapter extends CursorAdapter {
+public class FilmesAdapter extends CursorAdapter {
 
   private static final int VIEW_TYPE_DESTAQUE = 0;
 
@@ -20,7 +19,7 @@ public class FilmeAdapter extends CursorAdapter {
 
   private boolean useFilmeDestaque = false;
 
-  public FilmeAdapter(Context context, Cursor cursor) {
+  public FilmesAdapter(Context context, Cursor cursor) {
     super(context, cursor, 0);
   }
 
@@ -29,8 +28,8 @@ public class FilmeAdapter extends CursorAdapter {
     TextView desc;
     TextView dataLancamento;
     RatingBar avaliacao;
-    ImageView capa;
     ImageView poster;
+    ImageView capa;
 
     public ItemFilmeHolder(View view) {
       titulo = (TextView) view.findViewById(R.id.item_titulo);
@@ -42,43 +41,48 @@ public class FilmeAdapter extends CursorAdapter {
     }
   }
 
-  @Override public View newView(Context context, Cursor cursor, ViewGroup parent) {
+  @Override
+  public View newView(Context context, Cursor cursor, ViewGroup parent) {
+
     int viewType = getItemViewType(cursor.getPosition());
     int layoutId = -1;
+
     switch (viewType) {
-      case VIEW_TYPE_DESTAQUE:
+      case VIEW_TYPE_DESTAQUE: {
         layoutId = R.layout.item_filme_destaque;
         break;
-      case VIEW_TYPE_ITEM:
+      }
+      case VIEW_TYPE_ITEM: {
         layoutId = R.layout.item_filme;
         break;
+      }
     }
 
     View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+
     ItemFilmeHolder holder = new ItemFilmeHolder(view);
     view.setTag(holder);
 
     return view;
   }
 
-  @Override public void bindView(View view, Context context, Cursor cursor) {
+  @Override
+  public void bindView(View view, Context context, Cursor cursor) {
 
     ItemFilmeHolder holder = (ItemFilmeHolder) view.getTag();
-
     int viewType = getItemViewType(cursor.getPosition());
 
     int tituloIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_TITULO);
-    int descricaoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUNM_DESCRICAO);
+    int descricaoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_DESCRICAO);
     int posterIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_POSTER_PATH);
     int capaIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_CAPA_PATH);
-    int avalicaoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_AVALIACAO);
+    int avaliacaoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_AVALIACAO);
     int dataLancamentoIndex = cursor.getColumnIndex(FilmesContract.FilmeEntry.COLUMN_DATA_LANCAMENTO);
 
     switch (viewType) {
-
       case VIEW_TYPE_DESTAQUE: {
         holder.titulo.setText(cursor.getString(tituloIndex));
-        holder.avaliacao.setRating(cursor.getFloat(avalicaoIndex));
+        holder.avaliacao.setRating(cursor.getFloat(avaliacaoIndex));
         new DownloadImageTask(holder.capa).execute(cursor.getString(capaIndex));
         break;
       }
@@ -86,18 +90,20 @@ public class FilmeAdapter extends CursorAdapter {
         holder.titulo.setText(cursor.getString(tituloIndex));
         holder.desc.setText(cursor.getString(descricaoIndex));
         holder.dataLancamento.setText(cursor.getString(dataLancamentoIndex));
-        holder.avaliacao.setRating(cursor.getFloat(avalicaoIndex));
+        holder.avaliacao.setRating(cursor.getFloat(avaliacaoIndex));
         new DownloadImageTask(holder.poster).execute(cursor.getString(posterIndex));
         break;
       }
     }
   }
 
-  @Override public int getItemViewType(int position) {
+  @Override
+  public int getItemViewType(int position) {
     return (position == 0 && useFilmeDestaque ? VIEW_TYPE_DESTAQUE : VIEW_TYPE_ITEM);
   }
 
-  @Override public int getViewTypeCount() {
+  @Override
+  public int getViewTypeCount() {
     return 2;
   }
 
