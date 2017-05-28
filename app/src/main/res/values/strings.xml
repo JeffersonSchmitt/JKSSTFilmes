@@ -30,12 +30,12 @@
   </string-array>
 
   <!-- Preferencias de Idioma -->
-  <string name="prefs_idioma_label">Idoma</string>
+  <string name="prefs_idioma_label">Idioma</string>
   <string name="prefs_idioma_key">idioma</string>
   <string name="menu_atualizar_label">Atualizar</string>
   <string name="menu_config_label">Configurações</string>
   <string name="pd_carregando_titulo">Carregando..</string>
-  <string name="pd_aguarde_mensagem">Aguarde o carregamento!</string>
+  <string name="pd_carregando_mensagem">Aguarde o carregamento!</string>
 
   <string-array name="prefs_idioma_values">
     <item>en</item>
