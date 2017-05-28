@@ -1,4 +1,4 @@
-package com.github.jeffersonschmitt.jksttfilmes;
+package com.github.jeffersonschmitt.jksttfilmes.fragment;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import com.github.jeffersonschmitt.jksttfilmes.DownloadImageTask;
+import com.github.jeffersonschmitt.jksttfilmes.MainActivity;
+import com.github.jeffersonschmitt.jksttfilmes.R;
 import com.github.jeffersonschmitt.jksttfilmes.data.FilmesContract;
 
 public class FilmeDetalheFragment extends Fragment

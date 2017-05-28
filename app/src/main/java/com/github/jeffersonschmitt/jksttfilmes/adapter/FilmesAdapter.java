@@ -1,4 +1,4 @@
-package com.github.jeffersonschmitt.jksttfilmes;
+package com.github.jeffersonschmitt.jksttfilmes.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import com.github.jeffersonschmitt.jksttfilmes.DownloadImageTask;
+import com.github.jeffersonschmitt.jksttfilmes.R;
 import com.github.jeffersonschmitt.jksttfilmes.data.FilmesContract;
 
 public class FilmesAdapter extends CursorAdapter {

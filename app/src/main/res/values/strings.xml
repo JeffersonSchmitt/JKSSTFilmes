@@ -50,7 +50,7 @@
   </string-array>
 
   <!-- Account Menager -->
-  <string name="sync_account_type">JKSSTFilmes.jeffersonschmitt.github.com</string>
+  <string name="sync_account_type">jksstfilmes.androidpro.com.br</string>
   <string name="content_authority">com.github.jeffersonschmitt.jksttfilmes</string>
 
 </resources>

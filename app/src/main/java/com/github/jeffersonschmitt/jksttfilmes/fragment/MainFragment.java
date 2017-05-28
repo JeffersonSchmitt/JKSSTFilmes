@@ -1,18 +1,13 @@
-package com.github.jeffersonschmitt.jksttfilmes;
+package com.github.jeffersonschmitt.jksttfilmes.fragment;
 
-import android.app.AlarmManager;
-import android.app.IntentService;
-import android.app.PendingIntent;
+
 import android.app.ProgressDialog;
-
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -28,8 +23,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.github.jeffersonschmitt.jksttfilmes.Callback;
+import com.github.jeffersonschmitt.jksttfilmes.adapter.FilmesAdapter;
+import com.github.jeffersonschmitt.jksttfilmes.R;
+import com.github.jeffersonschmitt.jksttfilmes.SettingsActivity;
+import com.github.jeffersonschmitt.jksttfilmes.adapter.FilmesSyncAdapter;
 import com.github.jeffersonschmitt.jksttfilmes.data.FilmesContract;
-import com.github.jeffersonschmitt.jksttfilmes.service.FilmesIntentService;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
   private int posicaoItem = ListView.INVALID_POSITION;
@@ -86,12 +85,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     getLoaderManager().initLoader(FILMES_LOADER, null, this);
 
-    Intent intent= new Intent(getContext(), FilmesIntentService.class);
-    getActivity().startService(intent);
-
-
-
-
     return view;
   }
 
@@ -126,10 +119,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     switch (item.getItemId()) {
       case R.id.menu_atualizar:
 
-        Intent intentAlarme= new Intent(getContext(),FilmesReceiver.class);
-        PendingIntent pendingIntent=PendingIntent.getBroadcast(getActivity(),0,intentAlarme,PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmManager= (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+        FilmesSyncAdapter.syncImmediately(getContext());
 
         Toast.makeText(getContext(), "Atualizando os filmes...", Toast.LENGTH_LONG).show();
         return true;

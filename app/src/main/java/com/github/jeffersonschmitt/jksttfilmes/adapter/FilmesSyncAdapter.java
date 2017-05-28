@@ -1,4 +1,4 @@
-package com.github.jeffersonschmitt.jksttfilmes.sync;
+package com.github.jeffersonschmitt.jksttfilmes.adapter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -8,8 +8,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import com.github.jeffersonschmitt.jksttfilmes.BuildConfig;
@@ -30,6 +32,10 @@ import java.util.List;
  */
 
 public class FilmesSyncAdapter extends AbstractThreadedSyncAdapter {
+
+  public static final int SYNC_INTERVAL = 60 * 720;
+
+  public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
   public FilmesSyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
@@ -116,27 +122,56 @@ public class FilmesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
+  public static void configurePeriodicSync(Context context, int syncInterval, int flextime) {
+    Account account = getSyncAccount(context);
+    String autority = context.getString(R.string.content_authority);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      SyncRequest syncRequest = new SyncRequest.Builder().syncPeriodic(syncInterval, flextime)
+          .setSyncAdapter(account, autority)
+          .setExtras(new Bundle())
+          .build();
+      ContentResolver.requestSync(syncRequest);
+    } else {
+      ContentResolver.addPeriodicSync(account, autority, new Bundle(), syncInterval);
+    }
+  }
+
   public static void syncImmediately(Context context) {
 
-    Bundle bundle=new Bundle();
-    bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED,true);
-    bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
-    ContentResolver.requestSync(getSyncAccount(context),context.getString(R.string.content_authority),bundle);
-
+    Bundle bundle = new Bundle();
+    bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+    bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+    ContentResolver.requestSync(getSyncAccount(context),
+        context.getString(R.string.content_authority), bundle);
   }
 
   public static Account getSyncAccount(Context context) {
-    AccountManager accountManager =
-        (AccountManager) context.getSystemService(context.ACCOUNT_SERVICE);
-    Account account = new Account(context.getString(R.string.app_name),
-        context.getString(R.string.sync_account_type));
+    AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
-    if (accountManager.getPassword(account) == null) {
-      if (!accountManager.addAccountExplicitly(account, "", null)) {
+    Account account = new Account(context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
+
+    if(accountManager.getPassword(account) == null) {
+      if(!accountManager.addAccountExplicitly(account, "", null)) {
         return null;
       }
+
+      onAccountCreated(account, context);
     }
 
     return account;
   }
+
+  private static void onAccountCreated(Account account, Context context) {
+    FilmesSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+    ContentResolver.setSyncAutomatically(account, context.getString(R.string.content_authority),
+        true);
+    syncImmediately(context);
+
+  }
+
+  public static void initializerSyncAdapter(Context context){
+    getSyncAccount(context);
+  }
+
+
 }

@@ -8,14 +8,14 @@
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
-  <style name="JKsstFilmesTheme" parent="AppTheme">
+  <style name="JKSSTFilmesTheme" parent="AppTheme">
   <item name="actionBarStyle">@style/Actionbar.Solid.JKSTT.NoTitle</item>
 
   </style>
 
   <style name="Actionbar.Solid.JKSTT.NoTitle"
       parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-    <item name="android:displayOptions">useLogo|showHome</item>
+    <item name="displayOptions">useLogo|showHome</item>
     <item name="logo">@mipmap/ic_launcher</item>
   </style>
 

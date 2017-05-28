@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import com.github.jeffersonschmitt.jksttfilmes.adapter.FilmesSyncAdapter;
 
 /**
  * Created by Jefferson Schmitt on 28/05/2017.

@@ -8,7 +8,7 @@
 
   <fragment
       android:id="@+id/main_fragment"
-      android:name="com.github.jeffersonschmitt.jksttfilmes.MainFragment"
+      android:name="com.github.jeffersonschmitt.jksttfilmes.fragment.MainFragment"
       android:layout_height="match_parent"
       android:layout_width="0dp"
       android:layout_weight="4"

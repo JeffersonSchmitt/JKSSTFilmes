@@ -14,7 +14,7 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
     <activity android:name=".MainActivity"
-        android:theme="@style/JKsstFilmesTheme">
+        android:theme="@style/JKSSTFilmesTheme">
 
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -45,14 +45,13 @@
         android:exported="false"
         android:syncable="true"/>
 
-    <service android:name=".service.FilmesIntentService"/>
-    <service android:name=".sync.FilmesAuthenticatorService">
 
+    <service android:name=".sync.FilmesAuthenticatorService">
       <intent-filter>
-        <action android:name="android.accounts.AccountAuthenticator"/>
+        <action android:name="android.accounts.AccountAuthenticator" />
       </intent-filter>
-      <meta-data android:name=".sync.FilmesAuthenticatorService"
-          android:resource="@xml/authenticator"/>
+
+      <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator"/>
     </service>
 
     <service android:name=".sync.FilmesSyncService"
@@ -61,11 +60,10 @@
       <intent-filter>
         <action android:name="android.content.SyncAdapter"/>
       </intent-filter>
-      <meta-data android:name="ndroid.content.SyncAdapter" android:resource="@xml/syncadapter"/>
+      <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter"/>
     </service>
 
 
-    <receiver android:name=".FilmesReceiver" android:enabled="true"/>
 
     <meta-data
         android:name="io.fabric.ApiKey"

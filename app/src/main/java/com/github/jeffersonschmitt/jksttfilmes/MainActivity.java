@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import com.github.jeffersonschmitt.jksttfilmes.adapter.FilmesSyncAdapter;
+import com.github.jeffersonschmitt.jksttfilmes.fragment.FilmeDetalheFragment;
+import com.github.jeffersonschmitt.jksttfilmes.fragment.MainFragment;
 
 public class MainActivity extends AppCompatActivity implements Callback {
 
@@ -18,8 +21,9 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     setContentView(R.layout.activity_main);
+
+
 
     if (findViewById(R.id.fragment_filme_detalhe) != null) {
 
@@ -35,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
     MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment);
     mainFragment.setUseFilmeDestaque(!isTablet);
+
+    FilmesSyncAdapter.initializerSyncAdapter(this);
   }
 
   @Override public void onItemSelected(Uri uri) {
