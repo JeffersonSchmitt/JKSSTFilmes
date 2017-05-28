@@ -42,9 +42,14 @@
         android:name=".data.FilmesProvider"
     android:exported="false"/>
 
-      <meta-data
+    <service android:name=".service.FilmesIntentService"/>
+
+
+    <meta-data
             android:name="io.fabric.ApiKey"
             android:value="7d1464ad373f7967ecbe57f56149be5b01635d98" />
+
+
     </application>
 
 </manifest>
