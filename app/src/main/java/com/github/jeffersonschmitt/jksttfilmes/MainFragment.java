@@ -1,14 +1,18 @@
 package com.github.jeffersonschmitt.jksttfilmes;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -86,6 +90,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     getActivity().startService(intent);
 
 
+
+
     return view;
   }
 
@@ -119,8 +125,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     switch (item.getItemId()) {
       case R.id.menu_atualizar:
-        Intent intent= new Intent(getContext(), FilmesIntentService.class);
-        getActivity().startService(intent);
+
+        Intent intentAlarme= new Intent(getContext(),FilmesReceiver.class);
+        PendingIntent pendingIntent=PendingIntent.getBroadcast(getActivity(),0,intentAlarme,PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmManager= (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 
         Toast.makeText(getContext(), "Atualizando os filmes...", Toast.LENGTH_LONG).show();
         return true;
