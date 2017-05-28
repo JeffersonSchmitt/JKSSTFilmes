@@ -3,7 +3,9 @@
     package="com.github.jeffersonschmitt.jksttfilmes">
 
   <uses-permission android:name="android.permission.INTERNET"/>
-
+  <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+  <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+  <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
   
   <application
       android:allowBackup="true"
@@ -38,19 +40,36 @@
           android:value=".MainActivity"/>
     </activity>
 
-    <provider android:authorities="com.github.jeffersonschmitt.jksttfilmes"
+    <provider android:authorities="@string/content_authority"
         android:name=".data.FilmesProvider"
-    android:exported="false"/>
+        android:exported="false"/>
 
     <service android:name=".service.FilmesIntentService"/>
+    <service android:name=".sync.FilmesAuthenticatorService">
+
+      <intent-filter>
+        <action android:name="android.accounts.AccountAuthenticator"/>
+      </intent-filter>
+      <meta-data android:name=".sync.FilmesAuthenticatorService" android:resource="@xml/authenticator"/>
+    </service>
+
+    <service android:name=".sync.FilmesSyncService">
+      <intent-filter>
+        <action android:name="android.content.SyncAdapter"/>
+      </intent-filter>
+      <meta-data android:name="ndroid.content.SyncAdapter" android:resource="@xml/syncadapter"/>
+    </service>
+
+
+
 
     <receiver android:name=".FilmesReceiver" android:enabled="true"/>
 
     <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="7d1464ad373f7967ecbe57f56149be5b01635d98" />
+        android:name="io.fabric.ApiKey"
+        android:value="7d1464ad373f7967ecbe57f56149be5b01635d98"/>
 
 
-    </application>
+  </application>
 
 </manifest>
